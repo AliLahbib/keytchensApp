@@ -6,12 +6,7 @@
 
 import { AuthService, AuthValidator, ITokenStorage } from '../AuthService';
 import { IHttpClient } from '../api/HttpClient';
-import {
-  LoginRequest,
-  LoginResponse,
-  AuthErrorType,
-  User,
-} from '../../types/auth.types';
+import { LoginRequest, LoginResponse, AuthErrorType, User } from '../../types/auth.types';
 
 /**
  * Mock implementations for testing
@@ -154,23 +149,37 @@ describe('AuthService', () => {
       const mockUser: User = {
         id: '1',
         email: 'test@example.com',
-        name: 'Test User',
-        token: 'mock-token',
-        createdAt: new Date().toISOString(),
+        roles: ['ROLE_ACCOUNTANT'],
+        lang: 'fr-FR',
+        enabled: true,
       };
 
-      const mockResponse: LoginResponse = {
-        user: mockUser,
-        accessToken: 'mock-token',
+      const mockApiResponse = {
+        data: {
+          loginV2: {
+            token: 'mock-token',
+            user: {
+              uuid: '1',
+              email: 'test@example.com',
+              roles: ['ROLE_ACCOUNTANT'],
+              lang: 'fr-FR',
+              enabled: true,
+            },
+          },
+        },
       };
 
       // Mock the post method
-      jest.spyOn(mockHttpClient, 'post').mockResolvedValueOnce(mockResponse);
+      jest.spyOn(mockHttpClient, 'post').mockResolvedValueOnce(mockApiResponse as any);
 
       const result = await authService.login(credentials);
 
       expect(mockHttpClient.post).toHaveBeenCalledWith('/auth/login', credentials);
-      expect(result).toEqual(mockResponse);
+      const expectedResponse: LoginResponse = {
+        user: mockUser,
+        token: 'mock-token',
+      };
+      expect(result).toEqual(expectedResponse);
     });
 
     it('should persist token in storage after login', async () => {
@@ -179,18 +188,22 @@ describe('AuthService', () => {
         password: 'password123',
       };
 
-      const mockResponse: LoginResponse = {
-        user: {
-          id: '1',
-          email: 'test@example.com',
-          name: 'Test User',
-          token: 'mock-token',
-          createdAt: new Date().toISOString(),
+      const mockApiResponse = {
+        data: {
+          loginV2: {
+            token: 'mock-token',
+            user: {
+              uuid: '1',
+              email: 'test@example.com',
+              roles: ['ROLE_ACCOUNTANT'],
+              lang: 'fr-FR',
+              enabled: true,
+            },
+          },
         },
-        accessToken: 'mock-token',
       };
 
-      jest.spyOn(mockHttpClient, 'post').mockResolvedValueOnce(mockResponse);
+      jest.spyOn(mockHttpClient, 'post').mockResolvedValueOnce(mockApiResponse as any);
       jest.spyOn(mockTokenStorage, 'setToken');
 
       await authService.login(credentials);

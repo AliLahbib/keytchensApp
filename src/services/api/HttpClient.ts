@@ -3,13 +3,7 @@
  * @file Handles all HTTP communication with proper error handling
  */
 
-import {
-  AuthError,
-  AuthErrorType,
-  LoginRequest,
-  LoginResponse,
-  isAuthError,
-} from '../../types/auth.types';
+import { AuthError, AuthErrorType, isAuthError } from '../../types/auth.types';
 
 /**
  * Interface for HTTP client - allows for different implementations/mocking

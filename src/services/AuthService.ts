@@ -11,7 +11,22 @@ import {
   LoginResponse,
   User,
 } from '../types/auth.types';
-import { IHttpClient } from './api/HttpClient';
+import { API_ENDPOINTS, IHttpClient } from './api/HttpClient';
+
+interface LoginV2ApiResponse {
+  data?: {
+    loginV2?: {
+      token?: string;
+      user?: {
+        uuid?: string;
+        email?: string;
+        roles?: string[];
+        lang?: string;
+        enabled?: boolean;
+      };
+    };
+  };
+}
 
 /**
  * Interface for token storage - allows different implementations
@@ -104,33 +119,54 @@ export class AuthService {
       throw validationError;
     }
 
-    // Call API
-    // const response = await this.httpClient.post<LoginResponse>(
-    //   '/auth/login',
+    // const apiResponse = await this.httpClient.post<LoginV2ApiResponse>(
+    //   API_ENDPOINTS.login,
     //   credentials,
     // );
-    const response: LoginResponse = {
-      user: {
-        id: '1',
-        email: credentials.email,
-        name: 'John Doe',
-        token: 'fake-jwt-token',
-        createdAt: new Date().toISOString(),
+    // Mock response for development without backend
+    const apiResponse: LoginV2ApiResponse = {
+      data: {
+        loginV2: {
+          token: 'mock_token_' + Date.now(),
+          user: {
+            uuid: 'mock_uuid_123',
+            email: credentials.email,
+            roles: ['user'],
+            lang: 'fr-FR',
+            enabled: true,
+          },
+        },
       },
-      accessToken: 'fake-jwt-token',
     };
-    // Store token
-    if (response.accessToken) {
-      await this.tokenStorage.setToken(response.accessToken);
+    const loginData = apiResponse?.data?.loginV2;
+    console.log('Login API Response:', loginData);
+
+    if (!loginData?.token || !loginData.user?.uuid || !loginData.user.email) {
+      throw {
+        type: AuthErrorType.UNKNOWN_ERROR,
+        message: 'Invalid login response',
+      } as AuthError;
     }
-    // Store user if storage is provided
-    if (this.userStorage && response.user) {
+
+    const mappedUser: User = {
+      id: loginData.user.uuid,
+      email: loginData.user.email,
+      roles: loginData.user.roles ?? [],
+      lang: loginData.user.lang ?? 'fr-FR',
+      enabled: Boolean(loginData.user.enabled),
+    };
+
+    const response: LoginResponse = {
+      user: mappedUser,
+      token: loginData.token,
+    };
+
+    await this.tokenStorage.setToken(response.token);
+
+    if (this.userStorage) {
       await this.userStorage.setUser(response.user);
     }
 
-    console.log('AuthService.login :'); // Debug log
-    console.log("user : ",await this.userStorage?.getUser()); // Debug log
-    console.log("token : ",await this.tokenStorage.getToken()); // Debug log
     return response;
   }
 

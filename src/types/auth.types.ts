@@ -9,9 +9,9 @@
 export interface User {
   id: string;
   email: string;
-  name: string;
-  token: string;
-  createdAt: string;
+  roles: string[];
+  lang: string;
+  enabled: boolean;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface LoginRequest {
  */
 export interface LoginResponse {
   user: User;
-  accessToken: string;
+  token: string;
   refreshToken?: string;
 }
 

@@ -31,14 +31,7 @@ interface FormState {
   isPasswordVisible: boolean;
 }
 
-/**
- * LoginPage - Presentational component for user authentication
- * Responsibilities:
- * - Display login form
- * - Capture user input
- * - Show loading and error states
- * - Delegate to AuthService
- */
+
 export const LoginPage: React.FC<LoginPageProps> = ({
   authService,
   onLoginSuccess,
@@ -130,6 +123,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </View>
           <Text style={styles.title}>Keytchens</Text>
           <Text style={styles.subtitle}>Welcome Back</Text>
+          <Text style={styles.description}>
+            Discover and order delicious meals from local kitchens.
+          </Text>
         </View>
 
         <View style={styles.formContainer}>
@@ -252,6 +248,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     fontWeight: '400',
+  },
+  description: {
+    fontSize: 14,
+    color: '#555',
+    textAlign: 'center',
+    marginTop: 8,
   },
   formContainer: {
     marginVertical: 20,
