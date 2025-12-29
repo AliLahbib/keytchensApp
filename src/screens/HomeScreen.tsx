@@ -108,10 +108,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   cameraContainer: {
-    flex: 1,
+    height: 400,
+    width: '90%',
+    alignSelf: 'center',
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginVertical: 20,
   },
   camera: {
     width: '100%',
