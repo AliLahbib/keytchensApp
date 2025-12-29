@@ -123,9 +123,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </View>
           <Text style={styles.title}>Keytchens</Text>
           <Text style={styles.subtitle}>Welcome Back</Text>
-          <Text style={styles.description}>
-            Discover and order delicious meals from local kitchens.
-          </Text>
         </View>
 
         <View style={styles.formContainer}>
